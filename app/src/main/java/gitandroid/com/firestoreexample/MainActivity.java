@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -61,8 +62,10 @@ public class MainActivity extends AppCompatActivity {
                         String title = documentSnapshot.getString(KEY_TITLE);
                         String description = documentSnapshot.getString(KEY_DESCRIPTION);
                         textViewData.setText("Title:" + title + "\n" + "Description:" + description);
-                    } else
+                    } else {
                         Toast.makeText(MainActivity.this, "Document does not exist!", Toast.LENGTH_SHORT).show();
+                        textViewData.setText("");
+                    }
 
                 }
             }
@@ -110,6 +113,17 @@ public class MainActivity extends AppCompatActivity {
         //note.put(KEY_DESCRIPTION, description);
         //noteRef.set(note, SetOptions.merge()); this will update the field , but if the document doesn't exist this also create one..
         noteRef.update(KEY_DESCRIPTION, description); // we could use Map as above instead. This wont create the document , if does not exist.
+    }
+
+    public void deleteDescription(View v) {
+        //Map<String, Object> note = new HashMap<>();
+        //note.put(KEY_DESCRIPTION, FieldValue.delete());
+        //noteRef.update(note);
+        noteRef.update(KEY_DESCRIPTION, FieldValue.delete());
+    }
+
+    public void deleteNote(View v) {
+        noteRef.delete();
     }
 
     public void loadNote(View v) {
