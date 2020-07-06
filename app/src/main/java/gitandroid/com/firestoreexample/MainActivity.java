@@ -18,6 +18,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -101,6 +102,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    public void updateDescription(View view) {  // This updates description but also all the document so the title would be null.
+        String description = editTextDescription.getText().toString();
+        //Map<String, Object> note = new HashMap<>();
+        //note.put(KEY_DESCRIPTION, description);
+        //noteRef.set(note, SetOptions.merge()); this will update the field , but if the document doesn't exist this also create one..
+        noteRef.update(KEY_DESCRIPTION, description); // we could use Map as above instead. This wont create the document , if does not exist.
     }
 
     public void loadNote(View v) {
