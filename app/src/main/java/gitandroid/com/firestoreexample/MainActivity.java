@@ -14,10 +14,15 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";    // logt is a live template
@@ -28,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewData;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();    // Referance for firestore database.
     private DocumentReference noteRef = db.document("Notebook/My First Note");
-
+    //private ListenerRegistration noteListener;  if we want to detach the listener manually..
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +43,35 @@ public class MainActivity extends AppCompatActivity {
         editTextDescription = findViewById(R.id.editTextDescription);
         textViewData = findViewById(R.id.text_load_data);
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        noteRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() { // just put "this" to detach it on activity stop. We could also do detach onStop manually -- noteListener = noteRef.addSnapshotListener...  and remove listener onStop()..
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Toast.makeText(MainActivity.this, "Could not load firebase exception!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, e.toString());
+                    return;
+                } else {
+                    if (documentSnapshot.exists()) {
+                        String title = documentSnapshot.getString(KEY_TITLE);
+                        String description = documentSnapshot.getString(KEY_DESCRIPTION);
+                        textViewData.setText("Title:" + title + "\n" + "Description:" + description);
+                    } else
+                        Toast.makeText(MainActivity.this, "Document does not exist!", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // noteListener.remove();  to remove listener manually
     }
 
     public void saveNote(View v) {     // we have to set it public because we set it in .xml and it should take View in it.
