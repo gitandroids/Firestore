@@ -20,6 +20,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_DESCRIPTION = "description";
     private EditText editTextTitle;
     private EditText editTextDescription;
+    private EditText editTextPriority;
     private TextView textViewData;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();    // Referance for firestore database.
     private CollectionReference notebookRef = db.collection("Notebook");
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         editTextTitle = findViewById(R.id.editTextTitle);   // if cannot recognise go to build and rebuild the project
         editTextDescription = findViewById(R.id.editTextDescription);
+        editTextPriority = findViewById(R.id.edit_text_priority);
         textViewData = findViewById(R.id.text_load_data);
 
     }
@@ -68,9 +71,11 @@ public class MainActivity extends AppCompatActivity {
                     String documentId = note.getDocumentId();
                     String title = note.getTitle();
                     String description = note.getDescription();
-                    data += "ID: "+documentId
-                            + "\nTitle: " + title + "\nDescription: " + description + "\n\n";
-                   // notebookRef.document(documentId).update   To get the id of the document and work on it..
+                    int priority = note.getPriority();
+                    data += "ID: " + documentId
+                            + "\nTitle: " + title + "\nDescription: " + description
+                            + "\nPriority: " + priority + "\n\n";
+                    // notebookRef.document(documentId).update   To get the id of the document and work on it..
                 }
                 textViewData.setText(data);
             }
@@ -86,6 +91,11 @@ public class MainActivity extends AppCompatActivity {
     public void addNote(View v) {     // we have to set it public because we set it in .xml and it should take View in it.
         String title = editTextTitle.getText().toString();
         String description = editTextDescription.getText().toString();
+
+        if (editTextPriority.length() == 0) {
+            editTextPriority.setText("0");
+        }
+        int priority = Integer.parseInt(editTextPriority.getText().toString());
         // we need to use container to send the variables . We cannot just pass them directly.
         // we can use java map.(key -value pairs) or we can create our own java object -- Find detailed description on json video series.
         // we set it as object because we can pass different types other than strings
@@ -93,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 /*        Map<String, Object> note = new HashMap<>();
         note.put(KEY_TITLE, title);
         note.put(KEY_DESCRIPTION, description);*/
-        Note note = new Note(title, description);  // we could use MAP object instead of our Java Object
+        Note note = new Note(title, description, priority);  // we could use MAP object instead of our Java Object
         //db.document("Notebook/My First Note");  shorter version to name collection and document but the other one is better to use
         // We could create sub collections      db.collection("Notebook").document("My First Note").collection()set(note) . .
         notebookRef.add(note);
@@ -101,10 +111,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void loadNotes(View v) {
-        notebookRef.get()
+        notebookRef.whereGreaterThanOrEqualTo("priority", 2)
+                .orderBy("priority", Query.Direction.DESCENDING)
+                .limit(3)
+                .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) { // we have querysnapshot now instead of documentsnapshot.
                         String data = "";
                         for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {   // QueryDocumentSnapshot always exist. No need to check it. DocumentSnapshot is the superclass of it.
@@ -113,8 +125,10 @@ public class MainActivity extends AppCompatActivity {
                             String documentId = note.getDocumentId();
                             String title = note.getTitle();
                             String description = note.getDescription();
-                            data += "ID: "+documentId
-                                   + "\nTitle: " + title + "\nDescription: " + description + "\n\n";
+                            int priority = note.getPriority();
+                            data += "ID: " + documentId
+                                    + "\nTitle: " + title + "\nDescription: " + description
+                                    + "\nPriority: " + priority + "\n\n";
                         }
                         textViewData.setText(data);
                     }
