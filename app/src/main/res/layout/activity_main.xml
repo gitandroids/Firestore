@@ -24,37 +24,23 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="saveNote"
-        android:text="Save" />
+        android:onClick="addNote"
+        android:text="ADD" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="loadNote"
-        android:text="Load" />
-
-    <Button
+        android:onClick="loadNotes"
+        android:text="LOAD" />
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="UPDATE DESCRIPTION"
-        android:onClick="updateDescription" />
+        android:layout_height="wrap_content">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="DELETE DESCRIPTION"
-        android:onClick="deleteDescription" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="DELETE NOTE"
-        android:onClick="deleteNote" />
     <TextView
         android:id="@+id/text_load_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp" />
-
+   </androidx.core.widget.NestedScrollView>
 
 </androidx.appcompat.widget.LinearLayoutCompat>
