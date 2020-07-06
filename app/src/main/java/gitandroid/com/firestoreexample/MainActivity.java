@@ -59,8 +59,12 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 } else {
                     if (documentSnapshot.exists()) {
-                        String title = documentSnapshot.getString(KEY_TITLE);
+/*                        String title = documentSnapshot.getString(KEY_TITLE);
                         String description = documentSnapshot.getString(KEY_DESCRIPTION);
+                        textViewData.setText("Title:" + title + "\n" + "Description:" + description);*/
+                        Note note = documentSnapshot.toObject(Note.class);   // variable names should match!
+                        String title = note.getTitle();
+                        String description = note.getDescription();
                         textViewData.setText("Title:" + title + "\n" + "Description:" + description);
                     } else {
                         Toast.makeText(MainActivity.this, "Document does not exist!", Toast.LENGTH_SHORT).show();
@@ -85,9 +89,10 @@ public class MainActivity extends AppCompatActivity {
         // we can use java map.(key -value pairs) or we can create our own java object -- Find detailed description on json video series.
         // we set it as object because we can pass different types other than strings
         // Map is an interface and Hashmap is a specific implementation of Map interface . We can create it .
-        Map<String, Object> note = new HashMap<>();
+/*        Map<String, Object> note = new HashMap<>();
         note.put(KEY_TITLE, title);
-        note.put(KEY_DESCRIPTION, description);
+        note.put(KEY_DESCRIPTION, description);*/
+        Note note = new Note(title, description);  // we could use MAP object instead of our Java Object
         //db.document("Notebook/My First Note");  shorter version to name collection and document but the other one is better to use
         // We could create sub collections      db.collection("Notebook").document("My First Note").collection()set(note) . .
         noteRef.set(note)  // db.collection("Notebook").document("My First Note").set(note)
@@ -132,8 +137,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
-                            String title = documentSnapshot.getString(KEY_TITLE);
-                            String description = documentSnapshot.getString(KEY_DESCRIPTION);
+/*                          String title = documentSnapshot.getString(KEY_TITLE);
+                            String description = documentSnapshot.getString(KEY_DESCRIPTION);*/
+                            Note note = documentSnapshot.toObject(Note.class);   // variable names should match!
+                            String title = note.getTitle();
+                            String description = note.getDescription();
                             //Map<String, Object> note = documentSnapshot.getData();
                             textViewData.setText("Title:" + title + "\n" + "Description:" + description);
                         } else {
